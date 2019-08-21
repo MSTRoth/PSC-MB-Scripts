@@ -6,10 +6,10 @@ options(scipen=999)
 setwd("X:/1 Marielle Folder/Visualizations/Agency Charts/QbyQ charts") #location charts are saved
 
 #### One Chart####
-Agency <- "DOC"
-Year <- "FY15-19Q3"
-dis_year <- "FY17-19Q3"
-SubAgency <- "National Oceanic and Atmospheric Administration (NOAA)"
+Agency <- "Air Force"
+Year <- "FY17-19Q2"
+dis_year <- "FY17-19Q2" ###displayed year (in case different from file name)
+##SubAgency <- "National Oceanic and Atmospheric Administration (NOAA)"
 
 data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/By Agency/Quarter by Quarter/", Agency," ", Year,".csv", sep = ""))
 
@@ -17,7 +17,7 @@ data.organized <- data %>%
   rename("transaction_value" = `Transaction Value`,
          "fiscal_quarter" = `Fiscal Quarter`) %>% 
  # filter(`Funding Bureau` == SubAgency)  %>%                                         #### if subset of Department/Agency 
-  filter(`Funding Office Level 3` == SubAgency) %>%                                         #### if subset of Department/Agency
+ # filter(`Funding Office Level 3` == SubAgency) %>%                                         #### if subset of Department/Agency
   filter(`Fiscal Year` %in% c(2017:2019)) %>%                               ###date range for chart
   select(transaction_value, fiscal_quarter) %>% 
   group_by(fiscal_quarter) %>%
@@ -43,8 +43,8 @@ plot <-
   #facet_grid(~agency_comp, labeller = label_wrap_gen(20))+
   labs(y = "Contract Obligations (in) Billions",                                            ##Change based on $$ division
        title = paste(Agency, " Contract Obligations Comparison - ", dis_year, sep = ""),                   ##Change based on Agency and year/quarter
-       caption = "Data Source: Bloomberg Government",
-       subtitle = SubAgency                   ##if subsection of department
+       caption = "Data Source: Bloomberg Government"
+ #      ,subtitle = SubAgency                   ##if subsection of department
        ) +                                     ##Can change or remove caption
   # theme(plot.title = element_text(hjust = 0.5, vjust = 3, size = 24, face = "bold"),
   #       plot.subtitle = element_text(hjust = 0.5, size = 18, face = "bold"), axis.ticks.x = element_blank(),
@@ -57,9 +57,11 @@ plot <-
         axis.title.x = element_blank(),
         panel.spacing = unit(4, "lines"))
 
-ggsave(filename = paste("Total ", Agency,
-                        " ", SubAgency,
-                        " Contract Obligations ", dis_year, "by quarter.jpg", sep = ""), plot,          ##Change Based on Agency and year/quarter
+plot
+
+ggsave(filename = paste(Agency,
+                        #" ", SubAgency,
+                        " Contract Obligations ", dis_year, " by quarter.jpg", sep = ""), plot,          ##Change Based on Agency and year/quarter
        width = 13, height = 6.5, units = "in")
 
 
@@ -70,15 +72,14 @@ Year <- "FY17-19Q3"
 
 data_list<- lapply(Agency, function(x){
   data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/By Agency/Quarter by Quarter/", x," ", Year,".csv", sep = ""), col_types = cols("NAICS Code" = col_character()))
-  
-  data_list <-data %>% 
+
+  data_list <-data %>%
     mutate(id = x)
-  })  
+  })
 
-
-
-data.organized<- lapply(data_list, function(x){
-  data.organized <- x %>%
+data.organized<- lapply(Subagency, function(x){
+  data.organized <- data %>%
+    filter(`Funding Bureau` == x) %>% 
     rename("transaction_value" = `Transaction Value`,
            "fiscal_quarter" = `Fiscal Quarter`) %>%
     filter(`Fiscal Year` %in% c(2017:2019)) %>%                               ###date range for chart
@@ -120,9 +121,9 @@ plot<- lapply(data.organized, function(a){
           strip.text = element_text(face = "bold", size = 20),
           axis.title.x = element_blank(),
           panel.spacing = unit(4, "lines"))
- 
-
-
+  
+  
+  
 })
 
 matrix <- matrix(c(Agency, 1:6), nrow=6, ncol=2)
@@ -130,25 +131,81 @@ matrix
 
 lapply(matrix, function(x) {
   for (i in Agency){
-   ggsave(filename = paste(i," Contract Obligations ", Year, " by quarter.jpg", sep = ""), plot=plot[[x]],
-         width = 13, height = 6.5, units = "in")
-   
- } 
-
+    ggsave(filename = paste(i," Contract Obligations ", Year, " by quarter.jpg", sep = ""), plot=plot[[x]],
+           width = 13, height = 6.5, units = "in")
+    
+  } 
+  
   
 })
 
 func <-  function(a,b) {
   ggsave(filename = paste(a," Contract Obligations ", Year, " by quarter.jpg", sep = ""), plot=plot[[b]],
-                width = 13, height = 6.5, units = "in")
+         width = 13, height = 6.5, units = "in")
 }
 
 
 mapply(func, Agency, 1:6)
 
 
-plot[[1]]
-plot[[2]]
+
+###Subagency Charts (all as list)####
+
+Agency <- "DOJ"
+Year <- "FY17-19Q3"
+dis_year <- "FY17-19Q3" ###displayed year (in case different from file name)
+
+data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/By Agency/Quarter by Quarter/", Agency," ", Year,".csv", sep = ""))
+
+Subagency <- as.list(unique(data$`Funding Bureau`))
+
+data.organized<- lapply(Subagency, function(x){
+  data.organized <- data %>%
+    filter(`Funding Bureau` == x) %>% 
+    rename("transaction_value" = `Transaction Value`,
+           "fiscal_quarter" = `Fiscal Quarter`) %>%
+    filter(`Fiscal Year` %in% c(2017:2019)) %>%                               ###date range for chart
+    select(transaction_value, fiscal_quarter, `Funding Bureau`) %>%
+    group_by(fiscal_quarter, `Funding Bureau`) %>%
+    summarise(sum = sum(transaction_value)) %>% 
+    separate(fiscal_quarter, into = c("FY","quarter"), sep = "Q") %>%
+    mutate(total_obligations = round((sum)/1000000000, digits=2)) %>%           ###division of $$
+    group_by(FY, `Funding Bureau`) %>%
+    mutate(label_y = cumsum(total_obligations),
+           prop = 100*total_obligations/sum(total_obligations))%>%
+    mutate(FYYear = paste("FY", FY, sep = "")) %>%
+    mutate(Q_quarter = paste("Q", quarter, sep =""))
+  
+})
+
+plot<- lapply(data.organized, function(a){
+  plot <-
+    ggplot(a, aes(x = FYYear, y = total_obligations, fill = factor(Q_quarter, levels = c("Q4","Q3", "Q2","Q1")))) +
+    geom_bar(stat = "identity", color = "Black") +
+    geom_text(aes(label = round(total_obligations, digits = 2), y = label_y), size = 4, vjust = 1.5, fontface = "bold")+
+    geom_text(data = subset(a, FY != 2019), aes(label = sprintf('%.0f%%', prop), y = label_y), size = 4, vjust = 3, fontface = "bold")+
+    stat_summary(fun.y = sum, aes(label = ..y.., group = FY),
+                 geom = "text", vjust = -.5, size = sum(4,1), fontface = "bold")+   ####Adds total to top
+    scale_fill_manual(name = "Quarter", values = brewer.pal(9, "GnBu")[c(1,3,5,7)])+
+    #facet_grid(~agency_comp, labeller = label_wrap_gen(20))+
+    labs(y = "Contract Obligations (in) Billions",                                            ##Change based on $$ division
+         title = paste(Agency, " Contract Obligations Comparison - ", Year, sep = ""),                   ##Change based on Agency and year/quarter
+         subtitle = a$`Funding Bureau`[1],
+         caption = "Data Source: Bloomberg Government") +                                     ##Can change or remove caption
+    theme(plot.title = element_text(hjust = 0.5, vjust = 3, size = 24, face = "bold"),
+          plot.subtitle = element_text(hjust = 0.5, size = 18, face = "bold"),
+          plot.caption = element_text(size = 8, face = "italic"),
+          axis.ticks.x = element_blank(),
+          strip.text = element_text(face = "bold", size = 20),
+          axis.title.x = element_blank(),
+          panel.spacing = unit(4, "lines"))
+})
+
+
+lapply(1:length(Subagency), function(x) {
+  ggsave(filename = paste(Agency, " - ", Subagency[[x]]," Contract Obligations", dis_year, " by quarter.jpg", sep = ""), plot=plot[[x]],
+         width = 13, height = 6.5, units = "in")
+})
 
 #####DoD####
 
@@ -219,9 +276,9 @@ ggsave(filename = paste(Agency," Contract Obligations ", Year, "by quarter.jpg",
 ###By Agency####
 
 #### One Chart####
-Agency <- "DHA"
-Year <- "FY17-19Q2"
-SubAgency <- "Defense Health Agency (DHA)"
+Agency <- "USDA"
+Year <- "FY17-19Q3"
+#SubAgency <- "Defense Health Agency (DHA)"
 
 
 data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/By Agency/Quarter by Quarter/", Agency," ", Year,".csv", sep = ""))
@@ -235,7 +292,7 @@ data.organized <- data %>%
          fiscal_year = "Fiscal Year",
          "fiscal_quarter" = `Fiscal Quarter`) %>% 
   # filter(`Funding Bureau` == SubAgency)  %>%                                         #### if subset of Department/Agency 
-  filter(`Funding Office Level 6` == SubAgency) %>%                                         #### if subset of Department/Agency
+  # filter(`Funding Office Level 6` == SubAgency) %>%                                         #### if subset of Department/Agency
   select(PSC, transaction_value, fiscal_quarter, fiscal_year) %>% 
   left_join(select(dpap, c("PSC Code","P.S")), by = c(PSC = "PSC Code")) %>% 
   filter(PSC != "UNKN") %>% 

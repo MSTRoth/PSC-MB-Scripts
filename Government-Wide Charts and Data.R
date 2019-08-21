@@ -54,10 +54,10 @@ data.civdef$civ_def <- c("Defense - Q2", "Civilian - Q3")  ### Change based on q
 
 plotyr <- ggplot(data.civdef, aes(x = FYYear, y = total_obligations, fill = factor(Quarter, levels = c("Q4","Q3", "Q2","Q1")))) +
   geom_bar(stat = "identity", color = "black") +
- geom_text(aes(label = round(total_obligations, digits = 1), y = label_y), size = 3, vjust = 1.5, fontface = "bold")+
- geom_text(data = subset(data.civdef, Year != 2019), aes(label = sprintf('%.0f%%', prop), y = label_y), size = 3, vjust = 3, fontface = "bold")+
+ geom_text(aes(label = round(total_obligations, digits = 1), y = label_y), size = 4, vjust = 1.5, fontface = "bold")+
+ geom_text(data = subset(data.civdef, Year != 2019), aes(label = sprintf('%.0f%%', prop), y = label_y), size = 4, vjust = 3, fontface = "bold")+
   stat_summary(fun.y = sum, aes(label = ..y.., group = Year),
-               geom = "text", vjust = -.5, size = 4, fontface = "bold")+   ####Adds total to top
+               geom = "text", vjust = -.5, size = 5, fontface = "bold")+   ####Adds total to top
  #geom_text(aes(color = Quarter == "Q1", label = round(total_obligations, digits = 1), y = label_y), size = 3, vjust = 1.5) +## white on dark
 # geom_text(data = subset(data.civdef, Year != 2018), aes(color = Quarter == "Q1",
                          #                   label = sprintf('%.0f%%', prop), y = label_y), size = 3, vjust = 3)+ ## white on dark
@@ -81,7 +81,7 @@ title = "Contract Obligations Comparison FY16-FY19",    ####PSC Analysis: for di
 
 
 
-ggsave("Contract Obligations by Quarter- FY16-FY19Q3 for dist.jpg", plotyr,                  ###Change name 
+ggsave("Contract Obligations by Quarter- FY16-FY19Q3.jpg", plotyr,                  ###Change name 
        width = 15, height = 7, units = "in")
 #########################
 ##Quarter by Quarter seperate slides####

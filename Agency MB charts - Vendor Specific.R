@@ -5,9 +5,15 @@ library(RColorBrewer)
 ###Company Profile Charts -- Vendor Contract Transactions by Agency
 
 #Location for saving charts
-setwd("X:/1 Marielle Folder/Visualizations/Agency Charts/Contract Obligations by Agency")
+setwd("X:/1 Marielle Folder/Visualizations/Vendor Specific")
 
-data <- read_csv("X:/1 Marielle Folder/Data Sets/Vendor Specific/Halfaker Company Profile.csv")
+Vendor<- "Halfaker"  ###name of vendor exactly how it was saved
+year_range <- "FY15-18"  ###year range to display
+
+data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/Vendor Specific/", Vendor," Company Profile.csv", sep = ""))
+
+
+
 ###Get top n agencyies by obligation
 top_n_agencies <- data %>%
   select("Fiscal Year", "Funding Agency", "Transaction Value") %>%
@@ -48,7 +54,7 @@ plot <- ggplot(data.agency.year, aes(x = fiscal_year, y = total_transaction_valu
     facet_grid(~facet, labeller = label_wrap_gen(20))+
    # facet_wrap(~facet, labeller = label_wrap_gen(20), scales = "free")+                        ##use if want to change scales across agencies
     labs(x="Fiscal Year", y = "Contract Obligations (in) Millions",                             ##depends on $$ division
-         title = "Halfaker Contract Obligations by Agency FY15-18")+                            ##Vendor name and years
+         title = paste(Vendor, " Contract Obligations by Agency ", year_range, sep = ""))+                            ##Vendor name and years
     theme(plot.title = element_text(hjust = 0.5, size = 24, face = "bold"), 
           axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
@@ -59,6 +65,6 @@ plot
 
 
 
-ggsave("Halfaker Contract Obligations by Agency.jpg", plot,               ##Vendor Name
-       width = 13, height = 7, units = "in")
+ggsave(paste(Vendor, " Contract Obligations by Agency - ", year_range, ".jpg", sep = ""), plot,               ##Vendor Name
+       width = 13, height = 6, units = "in")
 
