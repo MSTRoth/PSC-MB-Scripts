@@ -6,9 +6,9 @@ options(scipen=999)
 setwd("X:/1 Marielle Folder/Visualizations/Agency Charts/QbyQ charts") #location charts are saved
 
 #### One Chart####
-Agency <- "Air Force"
-Year <- "FY17-19Q2"
-dis_year <- "FY17-19Q2" ###displayed year (in case different from file name)
+Agency <- "DOJ"
+Year <- "FY17-19Q3"
+dis_year <- "FY17-19Q3" ###displayed year (in case different from file name)
 ##SubAgency <- "National Oceanic and Atmospheric Administration (NOAA)"
 
 data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/By Agency/Quarter by Quarter/", Agency," ", Year,".csv", sep = ""))
@@ -270,15 +270,14 @@ plotdef <- ggplot(data.def, aes(x = FYYear, y = total_obligations, fill = factor
 
 ggsave(filename = paste(Agency," Contract Obligations ", Year, "by quarter.jpg", sep = ""), plotdef,          ##Change Based on Agency and year/quarter
        width = 13, height = 6.5, units = "in")
-
+##############################################################################
 ###Services vs Products COmparison quarter by Quarter#####
 
 ###By Agency####
 
 #### One Chart####
-Agency <- "USDA"
+Agency <- "ED"
 Year <- "FY17-19Q3"
-#SubAgency <- "Defense Health Agency (DHA)"
 
 
 data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/By Agency/Quarter by Quarter/", Agency," ", Year,".csv", sep = ""))
@@ -343,27 +342,15 @@ ggsave(filename = paste(Agency," Contract Obligations ", Year, "by quarter - P-S
 ###Defense####
 
 
-setwd("x:/1 Marielle Folder/Visualizations/Government-Wide/Defense-Wide/")
+setwd("X:/1 Marielle Folder/Visualizations/Agency Charts/QbyQ charts/Product-Service")
 data <- read_csv("x:/1 Marielle Folder/Data Sets/Government-Wide Data/csv/To Build/Defense Serv-Prod Data by quarter.csv")
 
-#data<-rename(data, civ_def = "Civ/Def", total_obligations = "Contract Obligations (in Billions)")
-
 data$Year = as.character(data$Year)
-
-# data.civdef <- data %>%
-#   rename(civ_def = "Civ/Def",
-#          total_obligations = "Contract Obligations (in Billions)") %>%
-#   #filter(Year!=2019) %>%
-#   filter(Year == 2014|Year ==2015| Year == 2016 | Year == 2017 | Year == 2018) %>%
-#   group_by(Year, civ_def) %>%
-#   mutate(label_y = cumsum(total_obligations))
-#
-# data.civdef$Year = as.character(data.civdef$Year)
 
 data.civdef_total <- data %>%
   rename(civ_def = "Civ/Def",
          total_obligations = "Contract Obligations (in Billions)") %>%
-  #filter(Year!=2019) %>%
+  filter(Year %in% 2017:2019) %>%
   group_by(Year, civ_def) %>%
   mutate(label_y = cumsum(total_obligations))
 
@@ -372,11 +359,10 @@ data.civdef_total$Year = as.character(data.civdef_total$Year)
 data.civdef <- data %>%
   rename(civ_def = "Civ/Def",
          total_obligations = "Contract Obligations (in Billions)") %>%
-  #filter(Year!=2019) %>%
+  filter(Year %in% 2017:2019) %>%
   group_by(Year, civ_def) %>%
   mutate(label_y = cumsum(total_obligations),
          prop = 100*total_obligations/sum(total_obligations)) %>%
-  #filter(Year == 2016 | Year == 2017 | Year == 2018) %>%
   mutate(FYYear = paste("FY",Year, sep = ""))
 
 
@@ -399,19 +385,18 @@ plot <- ggplot(data.civdef, aes(x = FYYear, y = total_obligations, fill = factor
   labs(x="Fiscal Year", y = "Contract Obligations (in) Billions", 
        title = "Defense Contract Obligations Comparison FY16-FY19",
        subtitle = NULL) +
-  theme(plot.title = element_text(hjust = 0.5, vjust = 3, size = 24, face = "bold"), plot.subtitle = element_text(hjust = 0.5, size = 18, face = "bold"),
+  theme(plot.title = element_text(hjust = 0.5, vjust = 3, size = 24, face = "bold"), 
+        plot.subtitle = element_text(hjust = 0.5, size = 18, face = "bold"),
+        plot.caption = element_text(size = 8, face = "italic"),
         axis.ticks.x = element_blank(),
         strip.text = element_text(face = "bold", size = 20), 
         axis.title.x = element_blank(),
         panel.spacing = unit(4, "lines"))
-# 
-# install.packages("png")
-# library(png)
-# 
-# img <- readPNG("C:/Users/Roth/Desktop/logo.png")
 
 
-ggsave("Defense Contract Obligations by Quarter- FY16-FY18.jpg", plot,
+
+
+ggsave("Defense Contract Obligations by Quarter - FY17-FY19 - P-S.jpg", plot,                ######
        width = 13, height = 6.5, units = "in")
 
 
