@@ -47,8 +47,10 @@ data.agency.year$facet = factor(data.agency.year$funding_agency, levels = c(top_
 plot <- ggplot(data.agency.year, aes(x = fiscal_year, y = total_transaction_value, fill = fiscal_year)) +
     geom_bar(stat = "identity") +
     geom_text(aes(label = round(total_transaction_value, digits = 1), vjust = 1.5), size = 3)+
-    scale_fill_manual("Fiscal Year", values = c("2015" = "steelblue1", "2016" = "orangered",             ###cycle these
-                                                "2017" = "grey70", "2018" = "orange"
+    scale_fill_manual("Fiscal Year", values = c("2015" = "steelblue1"
+                                                ,"2016" = "orangered"
+                                                ,"2017" = "grey70"
+                                                , "2018" = "orange"
                                                 #, "2019" = "olivedrab3"
                                                 )) +
     facet_grid(~facet, labeller = label_wrap_gen(20))+

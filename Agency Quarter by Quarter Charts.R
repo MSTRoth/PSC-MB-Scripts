@@ -139,13 +139,13 @@ lapply(matrix, function(x) {
   
 })
 
-func <-  function(a,b) {
-  ggsave(filename = paste(a," Contract Obligations ", Year, " by quarter.jpg", sep = ""), plot=plot[[b]],
-         width = 13, height = 6.5, units = "in")
-}
-
-
-mapply(func, Agency, 1:6)
+# func <-  function(a,b) {
+#   ggsave(filename = paste(a," Contract Obligations ", Year, " by quarter.jpg", sep = ""), plot=plot[[b]],
+#          width = 13, height = 6.5, units = "in")
+# }
+# 
+# 
+# mapply(func, Agency, 1:6)
 
 
 
@@ -276,7 +276,7 @@ ggsave(filename = paste(Agency," Contract Obligations ", Year, "by quarter.jpg",
 ###By Agency####
 
 #### One Chart####
-Agency <- "ED"
+Agency <- "USAID"
 Year <- "FY17-19Q3"
 
 
