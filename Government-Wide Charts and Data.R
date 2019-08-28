@@ -1,5 +1,4 @@
 library(colorspace)
-library(readr)
 library(RColorBrewer)
 library(tidyverse)
 options(scipen=999)
@@ -33,7 +32,7 @@ data.civdef <- data %>%
   group_by(Year, civ_def) %>%
   mutate(label_y = cumsum(total_obligations),
          prop = 100*total_obligations/sum(total_obligations)) %>%
-  filter(Year == 2016:2018 | (Year == 2019 #& `civ_def`== "Civilian" ###if first quarter
+  filter(Year %in% 2016:2018 | (Year == 2019 #& `civ_def`== "Civilian" ###if first quarter
                                                        )) %>%
   mutate(FYYear = paste("FY",Year, sep = ""))
 
@@ -72,7 +71,6 @@ ggsave("Contract Obligations by Quarter- FY16-FY19Q3.jpg", plotyr,              
 #########################
 ##Quarter by Quarter seperate slides####
 library(colorspace)
-library(readr)
 library(RColorBrewer)
 library(tidyverse)
 options(scipen=999)
@@ -144,7 +142,6 @@ ggsave("Defense Contract Obligations by Quarter- FY16-FY19.jpg", plotdef,       
 
 ##Civilian####
 library(colorspace)
-library(readr)
 library(RColorBrewer)
 library(tidyverse)
 options(scipen=999)
@@ -217,7 +214,6 @@ ggsave("Civilian Contract Obligations by Quarter- FY16-FY19.jpg", plotciv,      
 
 ####Total contract spending - services categories + products####
 library(colorspace)
-library(readr)
 library(RColorBrewer)
 library(tidyverse)
 options(scipen=999)
@@ -275,6 +271,8 @@ plot_all <- ggplot(label_height_all, aes(x = `Fiscal Year`, y = `$_billions_all`
   labs(x="Fiscal Year", y = "Contract Obligations (in) Billions",
        title = paste("Government-Wide", " Total Contract Spending", sep = ""))+
   theme(plot.title = element_text(hjust = 0.5, size = 24, face = "bold"), axis.ticks.x = element_blank()) 
+
+plot_all
 
 ##Save - Change to relevent year span when saving
 

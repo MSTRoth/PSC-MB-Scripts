@@ -7,7 +7,7 @@ library(RColorBrewer)
 #Location for saving charts
 setwd("X:/1 Marielle Folder/Visualizations/Vendor Specific")
 
-Vendor<- "Halfaker"  ###name of vendor exactly how it was saved
+Vendor<- "Raytheon"  ###name of vendor exactly how it was saved
 year_range <- "FY15-18"  ###year range to display
 
 data <- read_csv(paste("X:/1 Marielle Folder/Data Sets/Vendor Specific/", Vendor," Company Profile.csv", sep = ""))
@@ -20,7 +20,7 @@ top_n_agencies <- data %>%
   dplyr::rename(fiscal_year = "Fiscal Year",
                 funding_agency = "Funding Agency",
                 transaction_value = "Transaction Value") %>%
-  filter(fiscal_year != 2019) %>%                                        ###whichever years to not include
+  #filter(fiscal_year != 2019) %>%                                        ###whichever years to not include
   group_by(funding_agency) %>%
   dplyr::summarize(grand_total_transaction_value = sum(transaction_value)) %>%
   arrange(desc(grand_total_transaction_value)) %>%
@@ -35,7 +35,7 @@ data.agency.year <- data %>%
   dplyr::rename(fiscal_year = "Fiscal Year",
                 funding_agency = "Funding Agency",
                 transaction_value = "Transaction Value") %>%
-  filter(fiscal_year != 2019) %>%                                      ###whichever years to not include
+  #filter(fiscal_year != 2019) %>%                                      ###whichever years to not include
   filter(funding_agency %in% top_n_agencies) %>%
   dplyr::group_by(funding_agency, fiscal_year) %>%
   dplyr::summarize(total_transaction_value = (sum(transaction_value)/1000000))  ###$$$ division
