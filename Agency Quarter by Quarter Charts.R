@@ -77,7 +77,7 @@ data_list<- lapply(Agency, function(x){
     mutate(id = x)
   })
 
-data.organized<- lapply(Subagency, function(x){
+data.organized<- lapply(data_list, function(x){
   data.organized <- data %>%
     filter(`Funding Bureau` == x) %>% 
     rename("transaction_value" = `Transaction Value`,
